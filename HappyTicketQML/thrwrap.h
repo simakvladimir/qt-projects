@@ -5,7 +5,6 @@
 #include <QMutex>
 #include <QTime>
 #include "bustthread.h"
-#include "BigIntLib/BigIntegerLibrary.hh"
 
 class ThrWrap : public QObject
 {
