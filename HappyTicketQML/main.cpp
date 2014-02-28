@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
     view.rootContext()->setContextProperty("Wrapper", &Wrapper);
 
     view.setResizeMode(QQuickView::SizeRootObjectToView);
-    view.setSource(QUrl::fromLocalFile(QCoreApplication::applicationDirPath() + QLatin1String("/../qml/main.qml")));
+    view.setSource(QUrl("qrc:/qml/main.qml"));
 
 //    const QString lowerArgument = QString::fromLatin1(argv[1]).toLower();
 //    if (lowerArgument == QLatin1String("--fullscreen")) {

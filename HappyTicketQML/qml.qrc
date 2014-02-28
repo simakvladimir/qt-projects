@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/AbstractBusyIndicator.qml</file>
+        <file>qml/BusyIndicator.qml</file>
+        <file>qml/Button.qml</file>
+        <file>qml/Indicator.qml</file>
+        <file>qml/Info.qml</file>
+        <file>qml/main.qml</file>
+        <file>qml/Slider.qml</file>
+        <file>qml/content/images/background.png</file>
+        <file>qml/content/images/background_.jpg</file>
+        <file>qml/content/images/dots_512.png</file>
+        <file>qml/content/images/dots_512_invert.png</file>
+        <file>qml/content/images/slider_thumb.png</file>
+        <file>qml/content/images/slider_track.png</file>
+        <file>qml/content/images/slider_track_filled.png</file>
+        <file>qml/content/images/tile_background.png</file>
+    </qresource>
+</RCC>

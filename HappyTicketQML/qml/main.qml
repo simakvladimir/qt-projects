@@ -26,7 +26,7 @@ Item {
 
     Image {
         id: main
-        source: "content/images/background.jpg"
+        source: "content/images/background.png"
     }
 
     MouseArea {

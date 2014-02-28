@@ -1,5 +1,7 @@
 TEMPLATE = app
 
+CONFIG += console
+
 TARGET = HappyTicket
 
 QT += qml quick
@@ -16,8 +18,11 @@ OTHER_FILES += \
     qml/Button.qml \
     qml/AbstractBusyIndicator.qml \
     qml/BusyIndicator.qml \
-    qml/Info.qml
+    qml/Info.qml \
 
 HEADERS += \
     bustthread.h \
     thrwrap.h
+
+RESOURCES += \
+    qml.qrc
