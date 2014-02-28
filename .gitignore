@@ -1,0 +1,9 @@
+HappyTicketQML/qml/content/images/Thumbs.db
+*.user
+*.Debug
+*.Release
+*.o
+HappyTicketQML/release/qrc_qml.cpp
+*.exe
+HappyTicketQML/release/moc_bustthread.cpp
+HappyTicketQML/release/moc_thrwrap.cpp
