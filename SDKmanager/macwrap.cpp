@@ -1,26 +1,6 @@
 #include "macwrap.h"
 #include <QDebug>
 
-void packet_handler(u_char *param, const struct pcap_pkthdr *header, const u_char *pkt_data)
-{
-//    struct tm ltime;
-//    char timestr[16];
-//    time_t local_tv_sec;
-
-//    /*
-//     * unused variables
-//     */
-//    (VOID)(param);
-//    (VOID)(pkt_data);
-
-//    /* convert the timestamp to readable format */
-//    local_tv_sec = header->ts.tv_sec;
-//    localtime_s(&ltime, &local_tv_sec);
-//    strftime( timestr, sizeof timestr, "%H:%M:%S", &ltime);
-
-//    printf("%s,%.6d len:%d\n", timestr, header->ts.tv_usec, header->len);
-}
-
 MacWrap::MacWrap(QObject *parent) :
     QObject(parent),
     rxThr(NULL)
@@ -90,7 +70,7 @@ void MacWrap::deviceInitialize(QString name)
 
     qDebug() << "[MAC] OK" << name;
     rxThr = new PortCapturer( fp );
-    connect( rxThr, SIGNAL(emit_new_data_available(QString)), this, SLOT(slot_data_available(QString)) );
+    connect( rxThr, SIGNAL(emit_new_data_available(QByteArray)), this, SLOT(slot_data_available(QByteArray)) );
     rxThr->start();
 }
 
@@ -99,7 +79,7 @@ QStringList MacWrap::getDevicesDesc()
     return devicesHash.keys();;
 }
 
-void MacWrap::slot_get_settings(QString mac_src, QString mac_dst, QString mac_desc)
+void MacWrap::slot_get_settings(qlonglong mac_src, qlonglong mac_dst, QString mac_desc)
 {
     _mac_src = mac_src;
     _mac_dst = mac_dst;
@@ -108,7 +88,7 @@ void MacWrap::slot_get_settings(QString mac_src, QString mac_dst, QString mac_de
     deviceInitialize( devicesHash[_mac_desc] );
 }
 
-void MacWrap::slot_data_available(QString data)
+void MacWrap::slot_data_available(QByteArray data)
 {
     emit emit_data_available( data );
 }
@@ -136,7 +116,7 @@ void PortCapturer::run()
     struct pcap_pkthdr *header;
     const u_char       *pkt_data;
 
-    QString data;
+    QByteArray data;
 
     while(!_stop){
 
@@ -147,9 +127,9 @@ void PortCapturer::run()
                 break;
             case 1:
                 data.clear();
-                for(uint i=0;i<header->len;i++){
-                    data.append( QString::number( (int)pkt_data[i], 16 ) );
-                }
+                for(uint i=0;i<header->len;i++)
+                    data.append(pkt_data[i]);
+
                 emit emit_new_data_available( data );
                 break;
             default:

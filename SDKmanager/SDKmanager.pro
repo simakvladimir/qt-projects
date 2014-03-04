@@ -20,7 +20,9 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     settings.h \
-    macwrap.h
+    macwrap.h \
+    rxpacket.h \
+    txpacket.h
 
 FORMS    += mainwindow.ui \
     settings.ui

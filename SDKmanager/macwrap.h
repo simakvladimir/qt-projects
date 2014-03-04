@@ -5,6 +5,8 @@
 #include <QThread>
 #include <QHash>
 
+#include "rxpacket.h"
+
 #define HAVE_REMOTE
 #include <pcap.h>
 
@@ -20,7 +22,7 @@ private:
     pcap_t         *_device;
     volatile bool   _stop;
 signals:
-    void emit_new_data_available( QString data );
+    void emit_new_data_available( QByteArray data );
 };
 
 /*****************************************************************
@@ -32,8 +34,8 @@ class MacWrap : public QObject
 private:
     QHash<QString, QString> devicesHash;
 
-    QString _mac_src;
-    QString _mac_dst;
+    qlonglong _mac_src;
+    qlonglong _mac_dst;
     QString _mac_desc;
 
     PortCapturer *rxThr;
@@ -45,12 +47,12 @@ public:
 
     QStringList getDevicesDesc();
 signals:
-    void emit_data_available(QString);
+    void emit_data_available(QByteArray);
 public slots:
-    void slot_get_settings( QString mac_src,
-                            QString mac_dst,
+    void slot_get_settings(qlonglong mac_src,
+                            qlonglong mac_dst,
                             QString mac_desc );
-    void slot_data_available(QString data);
+    void slot_data_available(QByteArray data);
 
 };
 

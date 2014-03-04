@@ -19,6 +19,13 @@ Item {
         border.width: 2
     }
 
+    Connections{
+        target: MainWin
+        onSignalRedLedState: {
+           redLed.depthLight = RxData.isRedLedOn() ? 0.0: 1.0;
+        }
+    }
+
     Column{
         Row {
             anchors.fill: parent

@@ -8,6 +8,9 @@ namespace Ui {
 class Settings;
 }
 
+#define uintToHexStr(num, bytes)    \
+    QString("%1").arg(num, bytes*2, 16, QChar('0'))
+
 class Settings : public QDialog
 {
     Q_OBJECT
@@ -18,12 +21,12 @@ public:
 
     void setDeviceList(QStringList list);
 
-    QString getMacSource();
-    QString getMacDestination();
+    qlonglong getMacSource();
+    qlonglong getMacDestination();
     QString getDeviceDescription();
 
-    void setMacSource( QString str );
-    void setMacDestination( QString str );
+    void setMacSource(qulonglong value );
+    void setMacDestination(qulonglong value );
     void setDeviceDescription( QString str );
 
 private:

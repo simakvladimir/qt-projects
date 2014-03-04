@@ -1,4 +1,3 @@
-#include <QQuickView>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -12,14 +11,16 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    appSettings.mac_dst = appSettings.mac_src = "000000000000";
+    appSettings.mac_dst = appSettings.mac_src = 0;
 //    connect(ui->pushButton, SIGNAL(clicked()), qApp, SLOT(quit()));
 
-    QQuickView *view = new QQuickView();
+    view = new QQuickView();
     QWidget *container = QWidget::createWindowContainer(view, this);
     container->setMinimumSize(winSize);
     container->setMaximumSize(winSize);
     container->setFocusPolicy(Qt::TabFocus);
+    view->rootContext()->setContextProperty("MainWin", this);
+    view->rootContext()->setContextProperty("RxData", &_rx_data);
     view->setSource(QUrl("qml/main.qml"));
     ui->verticalLayout->addWidget(container);
 
@@ -37,8 +38,17 @@ void MainWindow::setDeviceList(QStringList list)
     settingForm->setDeviceList(list);
 }
 
+void MainWindow::updateGuiState()
+{
+    emit signalRedLedState();
+
+    /* table */
+//    ui->tblRxPct->
+}
+
 MainWindow::~MainWindow()
 {
+    delete view;
     delete ui;
 }
 
@@ -71,7 +81,9 @@ void MainWindow::get_settings_from_dialog()
                               appSettings.eth_desc );
 }
 
-void MainWindow::get_new_data_available(QString data)
+void MainWindow::get_new_data_available(QByteArray data)
 {
     qDebug() << "[MW]" << data;
+    _rx_data.setData(data);
+    updateGuiState();
 }

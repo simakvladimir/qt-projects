@@ -11,10 +11,10 @@ int main(int argc, char *argv[])
     MacWrap mac;
     MainWindow w;
 
-    QObject::connect( &w,   SIGNAL(signal_mac_settings(QString,QString,QString)),
-                    &mac, SLOT(slot_get_settings(QString,QString,QString)));
-    QObject::connect( &mac,   SIGNAL(emit_data_available(QString)),
-                        &w, SLOT(get_new_data_available(QString)));
+    QObject::connect( &w,   SIGNAL(signal_mac_settings(qlonglong,qlonglong,QString)),
+                    &mac, SLOT(slot_get_settings(qlonglong,qlonglong,QString)));
+    QObject::connect( &mac,   SIGNAL(emit_data_available(QByteArray)),
+                        &w, SLOT(get_new_data_available(QByteArray)));
 
     w.setDeviceList( mac.getDevicesDesc() );
     w.show();

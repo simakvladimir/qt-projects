@@ -20,16 +20,18 @@ void Settings::setDeviceList(QStringList list)
     ui->cbDevices->addItems(list);
 }
 
-QString Settings::getMacSource()
+qlonglong Settings::getMacSource()
 {
-    QString text = ui->leSrcMac->text().remove(QChar(' '));
-    return text.isEmpty() ? "000000000000" : text;
+    bool isOK;
+    qulonglong value = ui->leSrcMac->text().remove(QChar(' ')).toULongLong(&isOK,16);
+    return ui->leSrcMac->text().isEmpty() ? 0 : value;
 }
 
-QString Settings::getMacDestination()
+qlonglong Settings::getMacDestination()
 {
-    QString text = ui->leDstMac->text().remove(QChar(' '));
-    return text.isEmpty() ? "000000000000" : text;
+    bool isOK;
+    qulonglong value = ui->leDstMac->text().remove(QChar(' ')).toULongLong(&isOK,16);
+    return ui->leSrcMac->text().isEmpty() ? 0 : value;
 }
 
 QString Settings::getDeviceDescription()
@@ -37,14 +39,14 @@ QString Settings::getDeviceDescription()
     return ui->cbDevices->currentText();
 }
 
-void Settings::setMacSource(QString str)
+void Settings::setMacSource(qulonglong value)
 {
-    ui->leSrcMac->setText( str );
+    ui->leSrcMac->setText( uintToHexStr(value, 6) );
 }
 
-void Settings::setMacDestination(QString str)
+void Settings::setMacDestination(qulonglong value)
 {
-    ui->leDstMac->setText( str );
+    ui->leDstMac->setText( uintToHexStr(value, 6) );
 }
 
 void Settings::setDeviceDescription(QString str)
