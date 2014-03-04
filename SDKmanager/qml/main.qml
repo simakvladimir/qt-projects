@@ -4,6 +4,13 @@ Item {
     id: root
     width: 400
     height: 600
+
+    /* C++ interface */
+    signal buttonRedLedClicked(bool state)
+    signal buttonGreenLedClicked(bool state)
+    signal buttonYellowLedClicked(bool state)
+    signal buttonTelemetryClicked(bool state)
+
     Rectangle {
         anchors.rightMargin: 0
         anchors.bottomMargin: 0
@@ -19,10 +26,13 @@ Item {
         border.width: 2
     }
 
+    /* Receive events from Qt C++ */
     Connections{
         target: MainWin
-        onSignalRedLedState: {
+        onSignalUpdateQMLState: {
            redLed.depthLight = RxData.isRedLedOn() ? 0.0: 1.0;
+
+           sdkTime.time = RxData.getSDKTime()
         }
     }
 
@@ -38,7 +48,8 @@ Item {
                 text: "Желтый диод:"
     //            checked: settings.switchX
                 onCheckedChanged: {
-                    yellowLed.depthLight = checked ? 0.0 : 1.0;
+                    buttonYellowLedClicked(yellowLedSw.checked)
+//                    yellowLed.depthLight = checked ? 0.0 : 1.0;
                 }
             }
             Led{
@@ -58,7 +69,8 @@ Item {
                 text: "Красный диод:"
     //            checked: settings.switchX
                 onCheckedChanged: {
-                    redLed.depthLight = checked ? 0.0 : 1.0;
+                    buttonRedLedClicked(redLedSw.checked)
+//                    redLed.depthLight = checked ? 0.0 : 1.0;
                 }
             }
             Led{
@@ -78,7 +90,8 @@ Item {
                 text: "Зеленый диод:"
     //            checked: settings.switchX
                 onCheckedChanged: {
-                    greenLed.depthLight = checked ? 0.0 : 1.0;
+                    buttonGreenLedClicked(greenLedSw.checked)
+//                    greenLed.depthLight = checked ? 0.0 : 1.0;
                 }
             }
             Led{
@@ -95,9 +108,10 @@ Item {
         clip: false
         text: "Отправка телеметрии:"
 //            checked: settings.switchX
-//            onCheckedChanged: {
+            onCheckedChanged: {
+                buttonTelemetryClicked(telemetrySwitch.checked)
 //                settings.switchX = checked;
-//            }
+            }
     }
     Text {
         y: 250
@@ -162,12 +176,13 @@ Item {
     Text {
         id: sdkTime
         y: 510
+        property string time: "00:00:000"
         anchors.left: parent.left
         anchors.leftMargin: 22
         elide: Text.ElideRight
         font.pixelSize: 20
         color: "#202020"
-        text: "Время SDK"
+        text: "Время SDK: " + time
     }
 
 }

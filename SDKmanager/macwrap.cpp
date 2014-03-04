@@ -3,6 +3,7 @@
 
 MacWrap::MacWrap(QObject *parent) :
     QObject(parent),
+    _fp(NULL),
     rxThr(NULL)
 {
     scanDevice();
@@ -48,6 +49,8 @@ void MacWrap::scanDevice()
 
 void MacWrap::deviceInitialize(QString name)
 {
+    _fp = NULL;
+
     if (rxThr){
         rxThr->stop();
         rxThr->wait();
@@ -68,10 +71,28 @@ void MacWrap::deviceInitialize(QString name)
         return;
     }
 
+    _fp = fp;
     qDebug() << "[MAC] OK" << name;
     rxThr = new PortCapturer( fp );
     connect( rxThr, SIGNAL(emit_new_data_available(QByteArray)), this, SLOT(slot_data_available(QByteArray)) );
+    rxThr->setFilterMac(_mac_src);
     rxThr->start();
+}
+
+void MacWrap::sendPacket(QByteArray data)
+{
+    if (!_fp)
+    {
+        qDebug() << "[MacWrap]" << "Not valid ethernet descpitor, maybe not opened";
+        return;
+    }
+
+    /* Send down the packet */
+    if (pcap_sendpacket(_fp, reinterpret_cast<const u_char*>(data.constData()), data.size() /* size */) != 0)
+    {
+        qDebug("\nError sending the packet: \n", pcap_geterr(_fp));
+        return;
+    }
 }
 
 QStringList MacWrap::getDevicesDesc()
@@ -91,6 +112,12 @@ void MacWrap::slot_get_settings(qlonglong mac_src, qlonglong mac_dst, QString ma
 void MacWrap::slot_data_available(QByteArray data)
 {
     emit emit_data_available( data );
+}
+
+void MacWrap::slot_get_data_to_send(QByteArray data)
+{
+    qDebug() << "[MacWrap] Data to send " << data.toHex();
+    sendPacket( data );
 }
 
 /************************************************************************
@@ -113,6 +140,7 @@ PortCapturer::~PortCapturer()
 void PortCapturer::run()
 {
     int ret;
+    bool isOk;
     struct pcap_pkthdr *header;
     const u_char       *pkt_data;
 
@@ -129,6 +157,9 @@ void PortCapturer::run()
                 data.clear();
                 for(uint i=0;i<header->len;i++)
                     data.append(pkt_data[i]);
+
+                if (data.mid(0,6).toHex().toLongLong(&isOk,16) != _mac)
+                    continue;
 
                 emit emit_new_data_available( data );
                 break;

@@ -2,6 +2,8 @@
 #define TXPACKET_H
 
 #include <QObject>
+#include <QTime>
+#include <QDebug>
 
 class TxPacket : public QObject
 {
@@ -10,10 +12,10 @@ private:
     struct{
         char mac_dst[6];
         char mac_src[6];
-        quint16 pkt_length;
-        quint16 op_code;
-        quint32 param;
-        quint32 timePC;
+        char pkt_length[2];
+        char op_code[2];
+        char param[4];
+        char timePC[9];
     }_tx_pkt;
 
 public:
@@ -28,19 +30,39 @@ public:
         ON
     };
 
-    explicit TxPacket(QObject *parent = 0);
+    explicit TxPacket(QObject *parent = 0){};
 
     void setMacDst( qlonglong mac ){  for(int i=0; i<6;i++)
-                                         _tx_pkt.mac_dst[i] = mac & (0xFF0000000000 >> i*8) ;
+                                         _tx_pkt.mac_dst[i] = (mac >> (6-i-1)*8)&0xFF;
                                    }
     void setMacSrc( qlonglong mac ){  for(int i=0; i<6;i++)
-                                        _tx_pkt.mac_src[i] = mac & (0xFF0000000000 >> i*8) ;
+                                        _tx_pkt.mac_src[i] = (mac >> (6-i-1)*8)&0xFF;
                                    }
-    void setPktLength( unsigned short length ) { _tx_pkt.pkt_length = length; }
-    void setPktLength(){_tx_pkt.pkt_length = sizeof(_tx_pkt) - 6 - 6 - 2; };
-    void setCmdCode( cmd_type code ){ _tx_pkt.op_code = code; }
-    void setCmdParam( cmd_param param ){ _tx_pkt.param = param; }
-    void setCmdParam( int time ){ _tx_pkt.timePC = time; }
+    void setPktLength( quint16 length ) { for(int i=0; i<2;i++)
+                                            _tx_pkt.pkt_length[i] = (length >> (2-i-1)*8)&0xFF; }
+    void setPktLength(){for(int i=0; i<2;i++)
+                          _tx_pkt.pkt_length[i] = ((sizeof(_tx_pkt) - 6 - 6 - 2) >> (2-i-1)*8)&0xFF;
+                       }
+    void setCmdCode( cmd_type code ){for(int i=0; i<2;i++)
+                                        _tx_pkt.op_code[i] = (code >> (2-i-1)*8)&0xFF;
+                                     }
+    void setCmdParam( cmd_param param ){for(int i=0; i<4;i++)
+                                          _tx_pkt.param[i] = (param >> (4-i-1)*8)&0xFF;
+                                       }
+    void setTimeStamp( QTime time ){ for(int i=0; i<9;i++)
+                                        _tx_pkt.timePC[i] = time.toString("hhmmsszzz").at(i).toLatin1();
+                                   }
+
+    QByteArray getData(){ return QByteArray((char*)&_tx_pkt,sizeof(_tx_pkt)); }
+
+    void createFullPacket( qlonglong mac_dst, qlonglong mac_src, cmd_type code, cmd_param param, QTime time  ){
+        setMacDst(mac_dst);
+        setMacSrc(mac_src);
+        setPktLength();
+        setCmdCode(code);
+        setCmdParam(param);
+        setTimeStamp(time);
+    }
 
 signals:
 

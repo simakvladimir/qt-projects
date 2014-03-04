@@ -4,11 +4,15 @@
 #include <QMainWindow>
 #include <QHash>
 #include <QQuickView>
+#include <QQuickItem>
 #include <QQmlContext>
+#include <QQmlEngine>
+#include <QQmlComponent>
 #include "settings.h"
 
 /* Protocol Headers */
 #include "rxpacket.h"
+#include "txpacket.h"
 
 namespace Ui {
 class MainWindow;
@@ -32,6 +36,7 @@ private:
     RxPacket _rx_data;
 
     QQuickView *view;
+    QObject    *_qml_main;
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
@@ -45,8 +50,11 @@ public:
 private slots:
 
     void on_actnTuneMAC_triggered();
-
     void on_actnShowTable_triggered();
+    void on_buttonRedLedClicked(bool state);
+    void on_buttonGreenLedClicked(bool state);
+    void on_buttonYellowLedClicked(bool state);
+    void on_buttonTelemetryClicked(bool state);
 
     void get_settings_from_dialog();
 
@@ -59,7 +67,10 @@ signals:
     void signal_mac_settings( qlonglong, qlonglong, QString );
 
     /* QML */
-    void signalRedLedState();
+    void signalUpdateQMLState();
+
+    /*  */
+    void signal_data_to_send(QByteArray);
 };
 
 #endif // MAINWINDOW_H

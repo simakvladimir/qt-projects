@@ -18,9 +18,11 @@ public:
     ~PortCapturer();
     void run();
     void stop();
+    void setFilterMac(qlonglong mac){_mac=mac;}
 private:
     pcap_t         *_device;
     volatile bool   _stop;
+    qlonglong       _mac;
 signals:
     void emit_new_data_available( QByteArray data );
 };
@@ -38,12 +40,16 @@ private:
     qlonglong _mac_dst;
     QString _mac_desc;
 
+    pcap_t  *_fp;
+
     PortCapturer *rxThr;
 public:
     explicit MacWrap(QObject *parent = 0);
 
     void scanDevice();
     void deviceInitialize( QString name );
+
+    void sendPacket( QByteArray data );
 
     QStringList getDevicesDesc();
 signals:
@@ -53,6 +59,7 @@ public slots:
                             qlonglong mac_dst,
                             QString mac_desc );
     void slot_data_available(QByteArray data);
+    void slot_get_data_to_send(QByteArray data);
 
 };
 
