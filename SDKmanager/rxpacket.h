@@ -42,7 +42,8 @@ public:
 
     Q_INVOKABLE QString getSDKTime(){
         int time;
-        time = (_rx_pkt.sdk_time[0] << 8*3) | (_rx_pkt.sdk_time[1] << 8*2) | (_rx_pkt.sdk_time[2] << 8*1) | (_rx_pkt.sdk_time[3]);
+        qDebug() << (_rx_pkt.sdk_time[0]&0xFF) << (_rx_pkt.sdk_time[1]&0xFF) <<  (_rx_pkt.sdk_time[2]&0xFF) <<  (_rx_pkt.sdk_time[3]&0xFF);
+        time = ((_rx_pkt.sdk_time[0]&0xFF) << 8*3) | ((_rx_pkt.sdk_time[1]&0xFF) << 8*2) | ((_rx_pkt.sdk_time[2]&0xFF) << 8*1) | (_rx_pkt.sdk_time[3]&0xFF);
 
         qDebug() << "Time" << time;
         QTime qtime(0,0);
