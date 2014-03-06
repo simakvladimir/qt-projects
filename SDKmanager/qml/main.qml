@@ -31,8 +31,25 @@ Item {
         target: MainWin
         onSignalUpdateQMLState: {
            redLed.depthLight = RxData.isRedLedOn() ? 0.0: 1.0;
+           yellowLed.depthLight = RxData.isYellowLedOn() ? 0.0 : 1.0;
+           greenLed.depthLight  = RxData.isGreenLedOn() ? 0.0 : 1.0;
+
+           jumpModem.checked = RxData.isJumperModem();
+           jumpRS.checked    = RxData.isJumperRS();
+           jumpLock.checked = RxData.isJumperLock();
+           jumpMIF.checked  = RxData.isJumperMif();
+           jumpPROG.checked = RxData.isJumperProg();
+           jumpEXT1.checked = RxData.isJumperExt1();
+           jumpEXT2.checked = RxData.isJumperExt2();
 
            sdkTime.time = RxData.getSDKTime()
+
+           timeoutWnd.y = 650
+        }
+        onSignalQMLDataTimeOut: {
+            timeoutWnd.y = 550
+            timeoutWnd.caption = MainWin.getTimeout()
+//            MainWin.hide();
         }
     }
 
@@ -183,6 +200,38 @@ Item {
         font.pixelSize: 20
         color: "#202020"
         text: "Время SDK: " + time
+    }
+
+    Rectangle {
+        id: timeoutWnd
+        width: 350
+        height: 60
+        radius: 10
+        anchors.horizontalCenter: parent.horizontalCenter
+        y: 650
+        property string caption: ""
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: "#e1e1e1" }
+            GradientStop { position: 0.466; color: "#ffffff" }
+            GradientStop { position: 1.0; color: "#e0e0e0" }
+        }
+        border.color: "#808080"
+        border.width: 2
+        Text{
+            text: "Timeout. Данных уже нет " + parent.caption + "\nПроверьте соединение."
+            anchors.horizontalCenter: parent.horizontalCenter
+            font.pointSize: 14
+        }
+        Behavior on y {
+            NumberAnimation { duration: 500 }
+        }
+        MouseArea {
+            width: parent.width
+            height: parent.height
+            onClicked: {
+                timeoutWnd.y = 650;
+            }
+        }
     }
 
 }

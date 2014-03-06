@@ -18,7 +18,8 @@ int main(int argc, char *argv[])
                     &mac, SLOT(slot_get_data_to_send(QByteArray)));
     QObject::connect( &mac,   SIGNAL(emit_data_available(QByteArray)),
                         &w, SLOT(get_new_data_available(QByteArray)));
-
+    QObject::connect( &mac, SIGNAL(emit_data_timeout(int)),
+                      &w,   SLOT(get_data_timeout(int)));
     w.setDeviceList( mac.getDevicesDesc() );
     w.show();
 

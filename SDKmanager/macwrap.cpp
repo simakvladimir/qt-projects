@@ -75,6 +75,7 @@ void MacWrap::deviceInitialize(QString name)
     qDebug() << "[MAC] OK" << name;
     rxThr = new PortCapturer( fp );
     connect( rxThr, SIGNAL(emit_new_data_available(QByteArray)), this, SLOT(slot_data_available(QByteArray)) );
+    connect( rxThr, SIGNAL(emit_timeout(int)), this, SLOT(slot_get_timeout(int)));
     rxThr->setFilterMac(_mac_src);
     rxThr->start();
 }
@@ -120,6 +121,11 @@ void MacWrap::slot_get_data_to_send(QByteArray data)
     sendPacket( data );
 }
 
+void MacWrap::slot_get_timeout(int time)
+{
+    emit emit_data_timeout( time );
+}
+
 /************************************************************************
  *                              Port Capture
  ************************************************************************/
@@ -129,6 +135,8 @@ PortCapturer::PortCapturer(pcap_t *device)
 {
     _device = device;
     _stop   = false;
+    _time   = QTime::currentTime();
+    startTimer( 5000 );//30 s
 }
 
 PortCapturer::~PortCapturer()
@@ -161,6 +169,8 @@ void PortCapturer::run()
                 if (data.mid(0,6).toHex().toLongLong(&isOk,16) != _mac)
                     continue;
 
+                _time   = QTime::currentTime();
+                qDebug() << "[New data time]" << _time;
                 emit emit_new_data_available( data );
                 break;
             default:
@@ -174,4 +184,17 @@ void PortCapturer::run()
 void PortCapturer::stop()
 {
     _stop = true;
+}
+
+void PortCapturer::timerEvent(QTimerEvent *e)
+{
+    int diff;
+    _mtx.lock();
+    diff = _time.secsTo( QTime::currentTime() );
+    _mtx.unlock();
+
+    qDebug() << "[timer event]" << diff;
+
+    if (diff>15)
+        emit emit_timeout( diff );
 }

@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
     settingForm(NULL),
     ui(new Ui::MainWindow)
 {
+    setFixedSize( 420, 640 );
     ui->setupUi(this);
 
     appSettings.mac_dst = appSettings.mac_src = 0;
@@ -17,8 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     view = new QQuickView();
     QWidget *container = QWidget::createWindowContainer(view, this);
-    container->setMinimumSize(winSize);
-    container->setMaximumSize(winSize);
+    container->setFixedSize(winSize);
     container->setFocusPolicy(Qt::TabFocus);
     view->rootContext()->setContextProperty("MainWin", this);
     view->rootContext()->setContextProperty("RxData", &_rx_data);
@@ -27,7 +27,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     winSize = size();
 
-    settingForm = new Settings;
+    tableForm = new PacketTable(0);
+    settingForm = new Settings(this);
     QObject::connect( settingForm, SIGNAL(accepted()), this, SLOT(get_settings_from_dialog()) );
 
     /* QML interface */
@@ -41,8 +42,6 @@ MainWindow::MainWindow(QWidget *parent) :
                                    this, SLOT(on_buttonTelemetryClicked(bool)));
 
     // on first run, table is hiden
-    ui->tblRxPct->setVisible(false);
-
 
     QQmlEngine engine;
     QQmlComponent component(&engine, "main.qml");
@@ -82,8 +81,11 @@ void MainWindow::on_actnTuneMAC_triggered()
 
 void MainWindow::on_actnShowTable_triggered()
 {
-    bool isShowed = ui->actnShowTable->isChecked();
-    ui->tblRxPct->setVisible(isShowed);
+//    bool isShowed = ui->actnShowTable->isChecked();
+//    if (isShowed)
+        tableForm->show();
+//    else
+//        tableForm->hide();
 }
 
 /**
@@ -158,6 +160,7 @@ void MainWindow::get_new_data_available(QByteArray data)
     _rx_data.setData(data);
     _rx_data.getSDKTime();
 
+    tableForm->insert_row_in_table(data);
 //    for (int i=0;i<6;i++){
 //        qDebug() << "[RX pck] dst[" <<i<<"]" << _rx_data.getMacDst().at(i).unicode();
 //    }
@@ -171,4 +174,10 @@ void MainWindow::get_new_data_available(QByteArray data)
     qDebug() << "[RX pck] G LED" << _rx_data.isGreenLedOn();
 
     updateGuiState();
+}
+
+void MainWindow::get_data_timeout(int time)
+{
+  _timeout = time;
+  emit signalQMLDataTimeOut();
 }

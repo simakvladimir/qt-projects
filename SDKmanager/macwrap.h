@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QThread>
 #include <QHash>
+#include <QMutex>
 
 #include "rxpacket.h"
 
@@ -19,12 +20,18 @@ public:
     void run();
     void stop();
     void setFilterMac(qlonglong mac){_mac=mac;}
+protected:
+    void	timerEvent(QTimerEvent * e);
+
 private:
     pcap_t         *_device;
     volatile bool   _stop;
     qlonglong       _mac;
+    QMutex          _mtx;
+    QTime           _time;
 signals:
     void emit_new_data_available( QByteArray data );
+    void emit_timeout( int time );
 };
 
 /*****************************************************************
@@ -54,12 +61,14 @@ public:
     QStringList getDevicesDesc();
 signals:
     void emit_data_available(QByteArray);
+    void emit_data_timeout(int);
 public slots:
     void slot_get_settings(qlonglong mac_src,
                             qlonglong mac_dst,
                             QString mac_desc );
     void slot_data_available(QByteArray data);
     void slot_get_data_to_send(QByteArray data);
+    void slot_get_timeout(int time);
 
 };
 

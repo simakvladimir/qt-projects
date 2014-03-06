@@ -16,16 +16,19 @@ INCLUDEPATH += wpcap/Include
 SOURCES += main.cpp\
         mainwindow.cpp \
     settings.cpp \
-    macwrap.cpp
+    macwrap.cpp \
+    packettable.cpp
 
 HEADERS  += mainwindow.h \
     settings.h \
     macwrap.h \
     rxpacket.h \
-    txpacket.h
+    txpacket.h \
+    packettable.h
 
 FORMS    += mainwindow.ui \
-    settings.ui
+    settings.ui \
+    packettable.ui
 
 OTHER_FILES += \
     qml/main.qml \

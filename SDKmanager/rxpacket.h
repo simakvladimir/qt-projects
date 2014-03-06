@@ -39,6 +39,13 @@ public:
     Q_INVOKABLE bool isGreenLedOn() { return _rx_pkt.gled_state ? true : false; }
     Q_INVOKABLE bool isYellowLedOn(){ return _rx_pkt.yled_state ? true : false; }
 
+    Q_INVOKABLE bool isJumperModem() { return _rx_pkt.jmp_modem_state ? true : false; }
+    Q_INVOKABLE bool isJumperRS() { return _rx_pkt.jmp_rs_state ? true : false; }
+    Q_INVOKABLE bool isJumperLock() { return _rx_pkt.jmp_lock_state ? true : false; }
+    Q_INVOKABLE bool isJumperMif(){ return _rx_pkt.jmp_mif_state ? true : false; }
+    Q_INVOKABLE bool isJumperProg(){ return _rx_pkt.jmp_prog_state ? true : false; }
+    Q_INVOKABLE bool isJumperExt1() { return _rx_pkt.jmp_ext1_state ? true : false; }
+    Q_INVOKABLE bool isJumperExt2() { return _rx_pkt.jmp_ext2_state ? true : false; }
 
     Q_INVOKABLE QString getSDKTime(){
         int time;
@@ -47,7 +54,7 @@ public:
 
         qDebug() << "Time" << time;
         QTime qtime(0,0);
-        return  qtime.addMSecs(time).toString("hh:mm:ss.zzz");
+        return  qtime.addMSecs(time*10).toString("hh:mm:ss.zzz");
     }
 signals:
 

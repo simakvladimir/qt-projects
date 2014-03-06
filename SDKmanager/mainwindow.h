@@ -8,6 +8,7 @@
 #include <QQmlContext>
 #include <QQmlEngine>
 #include <QQmlComponent>
+#include "packettable.h"
 #include "settings.h"
 
 /* Protocol Headers */
@@ -31,10 +32,12 @@ private:
         qlonglong mac_dst;
         QString eth_desc;
     } appSettings;
+    PacketTable *tableForm;
     Settings *settingForm;
 
     RxPacket _rx_data;
 
+    int         _timeout;
     QQuickView *view;
     QObject    *_qml_main;
 public:
@@ -46,7 +49,7 @@ public:
     void updateGuiState();
 
     Q_INVOKABLE RxPacket *getRxPcktPonter(){ return &_rx_data; };
-
+    Q_INVOKABLE QString getTimeout(){ return QTime(0,0).addSecs(_timeout).toString("hh:mm:ss"); }
 private slots:
 
     void on_actnTuneMAC_triggered();
@@ -59,6 +62,7 @@ private slots:
     void get_settings_from_dialog();
 
     void get_new_data_available(QByteArray data);
+    void get_data_timeout(int time);
 
 private:
     Ui::MainWindow *ui;
@@ -68,6 +72,7 @@ signals:
 
     /* QML */
     void signalUpdateQMLState();
+    void signalQMLDataTimeOut();
 
     /*  */
     void signal_data_to_send(QByteArray);
