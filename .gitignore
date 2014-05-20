@@ -13,3 +13,6 @@ SDKmanager/debug/moc_mainwindow.cpp
 SDKmanager/debug/moc_rxpacket.cpp
 SDKmanager/debug/moc_settings.cpp
 SDKmanager/debug/moc_txpacket.cpp
+ft_analyze/Makefile
+SDKmanager/SDKmanager.pro.user.2.7pre1
+ft_analyze/debug/moc_ocldft.cpp
