@@ -17,11 +17,12 @@
 #define MEM_SIZE (4096)
 #define MAX_SOURCE_SIZE (0x100000)
 
-class OclDft : public QObject, IFourierTransform
+class OclDft : public QObject, public IFourierTransform
 {
     Q_OBJECT
 public:
     explicit OclDft(QObject *parent = 0);
+    ~OclDft() {}
     
     bool calculate(const cl_float2 *in, // complex values input (packed real and imaginary)
         cl_float2 *out,      // complex values output

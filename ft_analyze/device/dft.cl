@@ -20,8 +20,8 @@ __kernel void dft(
         if (i >= lengthN)
                 return;
 
-            printf("+ %f x%d ", in[i].x, i);
-            printf("- %f y%d", in[i].y, i);
+//            printf("+ %f x%d ", in[i].x, i);
+//            printf("- %f y%d", in[i].y, i);
 
         // Initialize sum and inner arguments
         float2 tot = 0;
@@ -47,8 +47,8 @@ __kernel void dft(
 
 //        if (i==1){
 //            printf("!!!!!!!!!!!!! %d ", i);
-            printf("| %f ", out[i].x);
-            printf("| %f ", out[i].y);
+//            printf("| %f ", out[i].x);
+//            printf("| %f ", out[i].y);
 //        }
 //        } else {
 //                // backward transform (frequential -> space)

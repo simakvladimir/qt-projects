@@ -4,24 +4,23 @@
 #
 #-------------------------------------------------
 
-QT       += core
+QT       += core gui
 
-QT       -= gui
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = ft_analyze
-CONFIG   += console
-CONFIG   -= app_bundle
-
 TEMPLATE = app
 
+include(ft_configure.pri)
 
 SOURCES += main.cpp \
     host/ocldft.cpp \
-    host/utils.cpp
-
-
-INCLUDEPATH += "3rdparty\include"
- win32:LIBS += "3rdparty\lib\x86\OpenCL.lib"
+    host/utils.cpp \
+    app/mainwindow.cpp \
+    app/wavfile.cpp \
+    app/controller.cpp \
+    app/model.cpp \
+    app/qfunc3d.cpp
 
 OTHER_FILES += \
     device/dft.cl
@@ -29,4 +28,12 @@ OTHER_FILES += \
 HEADERS += \
     host/ifouriertransform.h \
     host/ocldft.h \
-    host/utils.h
+    host/utils.h \
+    app/mainwindow.h \
+    app/wavfile.h \
+    app/controller.h \
+    app/model.h \
+    app/qfunc3d.h
+
+FORMS += \
+    app/mainwindow.ui
