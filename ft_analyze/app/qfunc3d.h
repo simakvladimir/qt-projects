@@ -12,10 +12,11 @@ public:
     ~QFunc3D();
 
     double operator()(double,double);
-
+    void setScale(double value) { scale = value; }
 private:
     double *xd,*yd,*zd;
     int Nx,My;
+    double scale;
 };
 
 #endif // QFUNC3D_H

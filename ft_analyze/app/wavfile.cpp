@@ -3,20 +3,11 @@
 WavFile::WavFile(QObject *parent) :
     QObject(parent)
 {
-#ifdef  DEBUG
-    printf("\ninside WavFile()");
-#endif     /* -----  not DEBUG  ----- */
 }
 
 /* deconstructor */
 WavFile::~WavFile()
 {
-
-#ifdef  DEBUG
-    printf("\n~WavFile()");
-#else      /* -----  not DEBUG  ----- */
-
-#endif     /* -----  not DEBUG  ----- */
 }
 
 
@@ -53,6 +44,11 @@ int WavFile::ifMoreDataAvailable()
     return 1;
 }
 
+void WavFile::reset()
+{
+    numInSamples = 0;
+}
+
 
 double WavFile::readCurrentInput()
 {
@@ -73,12 +69,7 @@ double WavFile::readCurrentInput()
 
 int WavFile::openWavFile(char* fileName)
 {
-
-#ifdef  DEBUG
-    printf("\nopenWavFile function");
-#endif     /* -----  not DEBUG  ----- */
     int i;
-    //printf("Inside function.");
     FILE *pFile;
     unsigned int stat;
     char outBuffer[80];
@@ -238,16 +229,11 @@ int WavFile::openWavFile(char* fileName)
             errorDesc = "Can't seek.";
             return (error = -1);
         }
-
     }
 
     /* find length of remaining data. */
     wBufferLength = pChunkHeader->dLen;
 
-
-#ifdef  DEBUG1
-    std::cout<<"wBufferLength:"<<wBufferLength;
-#endif     /* -----  not DEBUG  ----- */
     /* find number of samples. */
     maxInSamples = pChunkHeader->dLen;
     maxInSamples /= pWavHeader->numBitsPerSample/8;
@@ -280,6 +266,8 @@ int WavFile::openWavFile(char* fileName)
         for( i = 0; i < maxInSamples; i++)
         {
             gWavDataIn[i] = (double) (pU[i]);
+            if ( (i == maxInSamples) || ((i % 1024) == 0 ) )
+                emit samplesReaded( (i * 100) / maxInSamples );
         }
     }
     else
@@ -288,15 +276,10 @@ int WavFile::openWavFile(char* fileName)
         for( i = 0; i < maxInSamples; i++)
         {
             gWavDataIn[i] = (double) (pC[i]);
+            if ( (i == maxInSamples) || ((i % 1024) == 0 ) )
+                emit samplesReaded( (i * 100) / maxInSamples );
         }
     }
-
-#ifdef  DEBUG11
-    for( i = 0; i < maxInSamples; i++)
-    {
-        printf("%d:%f\t",i, gWavDataIn[i]);
-    }
-#endif     /* -----  not DEBUG  ----- */
 
     /*
      * save all this.
@@ -319,43 +302,5 @@ int WavFile::openWavFile(char* fileName)
 
 int WavFile::displayInformation(char* fName)
 {
-#if 1
-   /*
-    * print the data.
-    */
-   printf("\n-----------------------------------------------------");
-   printf("\nLoaded wav file : %s", fName);
-   printf("\nSample rate: %1.01f (Hz)", fs_hz);
-   printf("\nNumber of samples = %ld", maxInSamples);
-   printf("\nBits per sample = %d", bitsPerSample);
-   printf("\nNumber of channels = %d", nChannel);
-   printf("\n----------------------------------------------------\n");
-#endif
-
   return EXIT_SUCCESS;
 }
-
-//int WavFile::writeDataToFile()
-//{
-//    FILE* pFile;
-//    int n;
-//    pFile = fopen("speechData.dat", "w");
-//    char header[50];
-//    n = sprintf(header, "; Sample Rate %1f\n", fs_hz);
-//    fprintf(pFile, header);
-//    n = sprintf(header, "; Channels %d\n", nChannel);
-//    fprintf(pFile, header);
-
-//    for( int i = 0; i < maxInSamples; i++)
-//    {
-//       char data[30];
-//       int n;
-//       n = sprintf(data,"\t%1.9f\t%1.9f\n", i/fs_hz, gWavDataIn[i]/pow(2,bitsPerSample - 1)); // normalize it.
-//       //pData = gWavDataIn[i];
-//       fprintf(pFile, data);
-//       //std::cout<<data;
-//    }
-//    fclose(pFile);
-//    return EXIT_SUCCESS;
-
-//}

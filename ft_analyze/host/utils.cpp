@@ -1,5 +1,6 @@
 #include "utils.h"
 
+#include <QDebug>
 
 
 namespace IntelUtils {
@@ -19,8 +20,10 @@ namespace IntelUtils {
                 return NULL;
             }
 
-            if (!strcmp(pPlatformName, "Intel(R) OpenCL"))
+            if (!strcmp(pPlatformName, "Intel(R) OpenCL")){
+                qDebug() << "Platform name = " << pPlatformName;
                 return pPlatforms[ui];
+            }
         }
 
         return NULL;

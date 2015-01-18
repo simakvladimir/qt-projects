@@ -3,7 +3,9 @@
 
 Model::Model(QObject *parent) :
     QObject(parent),
-    wavFile(NULL),
+    enumMap(initEnums()),
+    soundFile(NULL),
+    fourier(NULL),
     Xd(NULL),
     Yd(NULL),
     Zd(NULL)
@@ -19,32 +21,58 @@ void Model::getModelData(double **_Xd, double **_Yd, double **_Zd)
 
 void Model::slotReadFile(QString name)
 {
-    wavFile = new WavFile;
-    wavFile->openWavFile(name.toLatin1().data());
+    if (soundFile)
+        delete soundFile;
 
-    emit signalReadFileFinished(wavFile->getError(),wavFile->getErrorDesc());
+    soundFile = new WavFile;
+    connect(soundFile, SIGNAL(samplesReaded(int)), this, SLOT(slotReadFileProgress(int)));
+    soundFile->openWavFile(name.toLatin1().data());
+
+    emit signalReadFileFinished(soundFile->getError(),soundFile->getErrorDesc());
 }
 
-void Model::slotProcess(int winSize, int devType, int ch)
+void Model::slotInit(int devType)
 {
-    switch (devType) {
-    case DEV_GPU:
-        fourier = new OclDft;
-        break;
-    case DEV_CPU:
-
-    default:
-        emit signalProcessFinished(1, "Неверный тип устройства");
+    if (devType >= DEV_MAX){
+        emit signalProcessFinished(0, "Не определенный тип устройства");
         return;
     }
 
+    if (fourier)
+        delete fourier;
+
+    switch (devType) {
+        case DEV_GPU_OPENCL:
+        case DEV_CPU_OPENCL:
+            fourier = new OclDft;
+            dynamic_cast<OclDft*>(fourier)->setDevType(devType);
+            qDebug() << "OPENCL";
+            break;
+        case DEV_CPU_X86:
+            fourier = new Dft;
+            qDebug() << "CPU";
+            break;
+        default:
+            emit signalProcessFinished(1, "Неверный тип устройства");
+            return;
+    }
 
     if(!fourier->init()){
         emit signalProcessFinished(1, fourier->getErrorDescription());
         return;
     }
 
-    int Md = wavFile->getNumSamples() / winSize; // time
+    emit signalInitFinished(0, QString("Устройство %1 инициализировано успешно.").arg(enumMap[devType]));
+}
+
+void Model::slotProcess(int winSize, int ch)
+{
+    Q_UNUSED(ch);
+
+    if (!soundFile || !fourier)
+        return;
+
+    int Md = soundFile->getNumSamples() / winSize; // time
     int Nd = winSize / 2;// freq
 
     if (Xd)
@@ -72,9 +100,14 @@ void Model::slotProcess(int winSize, int devType, int ch)
     for (int m = 0; m < Md; m++)
         Yd[m] = -3 + m*hy;
 
-    while(wavFile->ifMoreDataAvailable()){
+    soundFile->reset();
 
-        in[sample].x = wavFile->readCurrentInput();
+    QTime timeStart;
+    timeStart = QTime::currentTime();
+
+    while(soundFile->ifMoreDataAvailable()){
+
+        in[sample].x = soundFile->readCurrentInput();
         in[sample].y = 0;
 
         ++sample;
@@ -91,31 +124,33 @@ void Model::slotProcess(int winSize, int devType, int ch)
             Zd[window*Nd] = 0;
             for (int i=1; i < Nd; i++){
                 Zd[window*Nd+i] = out[i].x / 10000000;
-//                qDebug() << Zd[window*Nd+i]  << " " <<  window*Nd+i;
-            }
+           }
 
             window++;
+            emit signalProcessProgress( (window * 100) / Md );
+
 
 
         }
     }
 
+    QTime finishTime = QTime::currentTime();
+    timeDuration = QTime(0,0).addMSecs(timeStart.msecsTo(finishTime) );
+
     emit signalDataUpdated(Nd,Md);
+    emit signalProcessFinished(0, "Спектр получен");
 
     delete in;
     delete out;
 
+}
 
-    float iMax = Zd[0]; //set min and max as the first element
-    int ind = 0;
-    for (int i=4096; i < 6144; i++)
-    {
-        qDebug() << Zd[i] << " " <<  i << " !!!";
-        if (Zd[i] > iMax){
-            iMax = Zd[i];
-            ind  = i;
-        }
-    }
-    qDebug() << "Max" << iMax  << " " << ind;
+void Model::slotReadFileProgress(int value)
+{
+    emit signalReadProgress(value);
+}
 
+QStringList Model::getDeviceInfo()
+{
+    return fourier->getDeviceInfoList();
 }

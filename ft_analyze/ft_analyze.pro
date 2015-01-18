@@ -20,7 +20,8 @@ SOURCES += main.cpp \
     app/wavfile.cpp \
     app/controller.cpp \
     app/model.cpp \
-    app/qfunc3d.cpp
+    app/qfunc3d.cpp \
+    host/dft.cpp
 
 OTHER_FILES += \
     device/dft.cl
@@ -33,7 +34,8 @@ HEADERS += \
     app/wavfile.h \
     app/controller.h \
     app/model.h \
-    app/qfunc3d.h
+    app/qfunc3d.h \
+    host/dft.h
 
 FORMS += \
     app/mainwindow.ui

@@ -2,6 +2,9 @@
 // Not all platforms / devices support this, so you may have to switch to floats.
 //#pragma OPENCL EXTENSION cl_khr_fp64 : enable
 #pragma OPENCL EXTENSION cl_intel_printf : enable
+//#include <cl_platform.h>
+#define  CL_M_PI            3.141592653589793115998
+
 __kernel void dft(
         __global const float2 *in, // complex values input
         __global float2 *out,      // complex values output
@@ -25,7 +28,7 @@ __kernel void dft(
 
         // Initialize sum and inner arguments
         float2 tot = 0;
-        float param = (-2 * sign * i) * M_PI / (float)lengthN;
+        float param = (-2 * sign * i) * CL_M_PI / (float)lengthN;
 
         for (int k = 0; k < lengthN; k++) {
                 float2 value = in[k];

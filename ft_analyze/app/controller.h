@@ -18,11 +18,13 @@ public:
     void setModel();
     void tuneThread();
     void createConnections();
+    void initModel();
 signals:
-
+    void signalInitModel(int devType);
 public slots:
     void slotReadFileFinished(int code, QString str);
     void slotProcessFinished(int code, QString str);
+    void slotInitFinished(int code, QString str);
 
     void slotModelDataUpdated(int Nd, int Md);
 

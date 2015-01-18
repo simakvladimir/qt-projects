@@ -1,0 +1,8 @@
+DFT
+
+Made DFT of wav. files by 3 ways:
+1) OpenCL on GPU
+2) OpenCL on CPU
+3) q-thread computing by tradional algorithm
+
+depend : qwt3d

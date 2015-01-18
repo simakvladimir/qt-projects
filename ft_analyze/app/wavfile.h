@@ -47,6 +47,8 @@ public:
 
    int ifMoreDataAvailable();
 
+   void reset();
+
    void setFileName(QString name) { fileName = name; }
 
    int getError() { return error; }
@@ -75,6 +77,7 @@ public:
    int closeWavFile(FILE* pFile);
 signals:
    void finished();
+   void samplesReaded(int);
 
 public slots:
    void slotOpenWavFile() { openWavFile(fileName.toLatin1().data()); finished(); }

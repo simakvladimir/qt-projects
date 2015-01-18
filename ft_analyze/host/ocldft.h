@@ -7,6 +7,8 @@
 #include <QObject>
 #include <QDebug>
 
+#include <QtSerialPort/QSerialPort>
+
 
 #ifdef __APPLE__
 #include <OpenCL/opencl.h>
@@ -22,7 +24,7 @@ class OclDft : public QObject, public IFourierTransform
     Q_OBJECT
 public:
     explicit OclDft(QObject *parent = 0);
-    ~OclDft() {}
+    ~OclDft();
     
     bool calculate(const cl_float2 *in, // complex values input (packed real and imaginary)
         cl_float2 *out,      // complex values output
@@ -32,9 +34,13 @@ public:
 
     bool init();
 
+    void setDevType(int type) { devType = type; };
 
     bool loadOpenCLSrc(const char *fileName);
-    bool getPlatformInfo();
+    bool getIntelId();
+
+    bool getDeviceInfo();
+
     bool initOpenClEnvironment();
     bool initOpenClProgram();
 
@@ -51,7 +57,6 @@ public slots:
 private:
     char   *sourceStr;
     size_t  sourceSize;
-    int     num_cores;
     cl_platform_id intel_platform_id;
     cl_device_id device_id;
     cl_context context;
@@ -62,6 +67,10 @@ private:
     cl_mem memVectorIn;
     cl_mem memVectorOut;
 
+    int devType;
+
+    QStringList infoList;
+    QString deviceName;
     QString error;
 };
 

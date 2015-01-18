@@ -3,13 +3,13 @@
 
 #include <CL/cl.h>
 #include <QString>
-
+#include <QStringList>
 
 class IFourierTransform
 {
 public:
     IFourierTransform() {};
-    ~IFourierTransform() {};
+    virtual ~IFourierTransform() {};
 
     virtual bool init() = 0;
 
@@ -21,6 +21,11 @@ public:
     ) = 0;
 
     virtual QString getErrorDescription() = 0;
+    QStringList &getDeviceInfoList() { return deviceInfo; };
+
+protected:
+    QStringList deviceInfo;
+
 };
 
 #endif // IFOURIERTRANSFORM_H

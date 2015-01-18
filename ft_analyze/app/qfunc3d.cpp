@@ -5,7 +5,8 @@
 QFunc3D::QFunc3D(Qwt3D::SurfacePlot *sp,
         double *x,double *y,double *z,
         int N,int M) :
-    Function(sp)
+    Function(sp),
+    scale(1.0)
 {
     xd = (double *)malloc((N)*sizeof(double));
     yd = (double *)malloc((M)*sizeof(double));
@@ -37,5 +38,5 @@ double QFunc3D::operator()(double x,double y)
     int m = floor((y-yd[0])/dy + 0.5);
     if (m < 0 || m > My-1) return 0;
 //    qDebug() << zd[m*Nx+n] << m*Nx+n;
-    return zd[m*Nx+n];
+    return zd[m*Nx+n] * scale;
 }
