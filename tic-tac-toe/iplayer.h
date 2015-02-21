@@ -26,6 +26,7 @@ public:
 
     virtual QString id() const = 0;
     virtual void step() {}
+    virtual void cancel() {}
 
     void setOpponent(IPlayer *player)  { m_opponent = player; }
     IPlayer *opponent()                { return m_opponent;   }

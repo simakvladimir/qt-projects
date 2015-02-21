@@ -22,10 +22,18 @@ void Player::step()
     m_loop.exec();
 }
 
+void Player::cancel()
+{
+    qDebug() << "[Player::cancel]";
+    m_loop.quit();
+}
+
+
+
 
 void Player::receiveIndex(int index)
 {
-    qDebug() << "receiveIndex";
+    qDebug() << "receiveIndex" << index;
     m_loop.quit();
     board()->setByIndex(index, *this);
 }

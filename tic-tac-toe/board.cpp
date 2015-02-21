@@ -21,12 +21,13 @@ Board::Board(Board *board)
 {
     Cell *cell;
 
-    m_rows = board->columns();
-    m_columns = board->rows();
+    m_rows = board->rows();
+    m_columns = board->columns();
 
-    for (int i = 0; i < board->columns(); i++)
-        for (int j = 0; j < board->rows(); j++){
-            cell = new Cell(j, i, board->cell(i,j)->value());
+    for (int i = 0; i < board->rows(); i++)
+        for (int j = 0; j < board->columns(); j++){
+            int value = board->cell(i,j)->value();
+            cell = new Cell(i, j, value);
             connect(cell, SIGNAL(valueChanged()), this, SIGNAL(changed()));
             m_board << cell;
         }
@@ -34,7 +35,7 @@ Board::Board(Board *board)
 
 Board::~Board()
 {
-    qDebug() << "~Board";
+//    qDebug() << "~Board";
     qDeleteAll(m_board);
 }
 
@@ -59,32 +60,32 @@ QList<Move> Board::availableMoves() const
 
 void Board::setByIndex(int index, const IPlayer &player)
 {
-    m_board.at(index)->setValue(player.side());
+    int x, y;
+    x = index % columns();
+    y = index / rows();
+
+    qDebug() << "[Board::setByIndex]" << x << y;
+
+    cell(x,y)->setValue(player.side());
 }
 
 int Board::valueByIndex(int index)
 {
-    if (index < 0 || index >= m_board.count())
-        return Cell::CELL_EMPTY;
+    int x, y;
+    x = index % columns();
+    y = index / rows();
 
-    return m_board.at(index)->value();
+//    qDebug() << "[Board::valueByIndex]" << x << y << index;
+
+    Cell *_cell = cell(x,y);
+    return _cell ? _cell->value() : 0;
 }
 
 bool Board::isWin(const IPlayer &player)
 {
     int count;
 
-    // row
-    for (int i = 0; i < rows(); i++){
-        count = 0;
-        for (int j = 0; j < columns(); j++){
-            count = (cell(i,j)->value() == player.side()) ? count + 1 : 0;
-            if (count == 3)
-                return true;
-        }
-    }
-
-    // columns
+    // column
     for (int i = 0; i < columns(); i++){
         count = 0;
         for (int j = 0; j < rows(); j++){
@@ -94,22 +95,42 @@ bool Board::isWin(const IPlayer &player)
         }
     }
 
-    // diag
-    for (int i = 0; i < columns(); i++){
+    // rows
+    for (int i = 0; i < rows(); i++){
         count = 0;
-        for (int x = i, y = 0; x  < columns() && y < rows(); x++, y++){
-            count = (cell(x,y)->value() == player.side()) ? count + 1 : 0;
+        for (int j = 0; j < columns(); j++){
+            count = (cell(j,i)->value() == player.side()) ? count + 1 : 0;
             if (count == 3)
                 return true;
         }
     }
-    for (int j = 0; j < rows(); j++){
+
+    // diag  \ (1,1; 2,2; 3,3)
+    for (int i = -rows(); i < columns(); i++){
         count = 0;
-        for (int x = 0, y = j; x < columns() && y < rows(); x++, y++){
-            count = (cell(x,y)->value() == player.side()) ? count + 1: 0;
+        int x, y;
+        for (x = i, y = 0; y < rows() && x < columns(); x++, y++){
+            if (x < 0)
+                continue;
+            count = (cell(x,y)->value() == player.side()) ? count + 1 : 0;
             if (count == 3)
                 return true;
         }
+
+    }
+
+    // diag / (3,1; 2,2; 1,3)
+    for (int i = columns() + rows() - 1; i >= 0;  i--){
+        count = 0;
+        int x, y;
+        for (x = i, y = 0; y < rows() && x >= 0; x--, y++){
+            if (x >= columns())
+                continue;
+            count = (cell(x,y)->value() == player.side()) ? count + 1 : 0;
+            if (count == 3)
+                return true;
+        }
+
     }
 
     return false;

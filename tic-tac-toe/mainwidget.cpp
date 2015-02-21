@@ -54,3 +54,10 @@ void MainWidget::exitApplication()
     QApplication::quit();
 }
 
+void MainWidget::closeEvent(QCloseEvent *ev)
+{
+    qDebug() << "closeEvent";
+    m_game.setGameOn(true);
+    m_game.cleanup();
+}
+

@@ -2,6 +2,7 @@
 #define AI_H
 
 #include <QObject>
+#include <QFuture>
 #include "iplayer.h"
 
 class AI : public IPlayer
@@ -13,6 +14,7 @@ public:
 
     QString id() const { return "AI"; }
     void step();
+    void cancel();
 
     void setDifficulty(int level) { m_difficulty = level; }
     int difficulty() const        { return m_difficulty;  }
@@ -21,7 +23,12 @@ signals:
 public slots:
 
 private:
+    void run();
+
+    bool m_cancel;
     int m_difficulty;
+    QFuture<void> m_future;
+
 
 };
 

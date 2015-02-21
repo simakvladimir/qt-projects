@@ -20,6 +20,9 @@ public slots:
     void minimizeWindow();
     void exitApplication();
 
+protected:
+    void closeEvent(QCloseEvent *ev);
+
 private:
     QDeclarativeContext *m_context;
     Game m_game;

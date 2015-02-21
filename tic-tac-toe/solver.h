@@ -19,10 +19,11 @@ public:
 
 private:
 
-    int heuristic(Board *board, const IPlayer &hero, const IPlayer &opponent);
+    int heuristic(Board *board, const IPlayer &hero, const IPlayer &opponent, int depth);
     QList<Board *> childrens(Board *board, const IPlayer &player);
 
-    bool isTerminal(Board *board, int curDepth) const;
+    bool isTerminal(Board *board, const IPlayer &hero,
+                    const IPlayer &opponent, int curDepth) const;
 
     int m_depth;
 };

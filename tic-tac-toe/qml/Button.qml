@@ -8,7 +8,7 @@ Item {
     signal clicked
 
     // Suitable default size
-    width: parent.width
+    width: parent.width / 4
     height: 60
 
     Rectangle {

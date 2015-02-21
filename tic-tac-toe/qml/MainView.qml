@@ -1,6 +1,10 @@
 import Qt 4.7
 
 Item {
+    id: root
+
+    property int size: 4
+
     width: 800
     height: 480
 
@@ -13,6 +17,8 @@ Item {
 
     Button{
         id: startButton
+        text: "Старт"
+        anchors.centerIn: parent
         enabled: game.gameOn
         opacity: {
             if (game.gameOn)
@@ -21,9 +27,27 @@ Item {
                 return 0.0;
         }
         onClicked: {
-            game.start("man", "cpu", 5)
+            game.start("man", "cpu", size)
             console.log(game.gameOn)
         }
+    }
+
+    Text {
+        id: textView
+        font.family: "Helvetica"
+        font.pointSize: 20
+//        enabled:  !game.gameOn
+//        smooth: true
+        color: "#000000"
+        anchors.centerIn: parent
+        text: "Ход ПК"
+        opacity: {
+            if (game.activePlayer == "AI" && !game.gameOn)
+                return 1.0
+            else
+                return 0.0
+        }
+
     }
 
     // *** Game View Hider ***

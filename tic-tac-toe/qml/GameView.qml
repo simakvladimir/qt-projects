@@ -48,13 +48,13 @@ Item {
         Grid {
             // Board is 19x19 tiles
             id: boardGrid
-            columns: 5
+            columns: root.size
             spacing: 2
             x: 20
             y: 20
 
             Repeater {
-                model: 25
+                model: root.size * root.size
                 Cell { }
             }
         }

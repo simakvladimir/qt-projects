@@ -19,12 +19,20 @@ Game::Game(QObject *parent) :
 Game::~Game()
 {
     qDebug() << "~Game";
+//    if (m_playerOne)
+//        delete m_playerOne;
+//    if (m_playerTwo)
+//        delete m_playerTwo;
+//    if (m_board)
+//        delete m_board;
+}
+
+void Game::cleanup()
+{
     if (m_playerOne)
-        delete m_playerOne;
+        m_playerOne->cancel();
     if (m_playerTwo)
-        delete m_playerTwo;
-    if (m_board)
-        delete m_board;
+        m_playerTwo->cancel();
 }
 
 
@@ -48,10 +56,18 @@ void Game::start(QString pl1, QString pl2, int size)
         m_playerOne = new Player(Cell::CELL_TIC, m_board, this);
     }
 
+    m_playerOne->setOpponent(m_playerTwo);
+    m_playerTwo->setOpponent(m_playerOne);
+
     while (!isFinished() && !gameOn()) {
-        m_activePlayer = m_playerOne->id();
+        setActivePlayer(m_playerOne->id());
         m_playerOne->step();
+
+        setActivePlayer(m_playerTwo->id());
+        m_playerTwo->step();
     }
+
+    cleanup();
 
     setGameOn(true);
 }

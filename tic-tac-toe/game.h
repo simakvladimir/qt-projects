@@ -28,6 +28,8 @@ public:
     QString activePlayer() const         {return m_activePlayer;}
     void setActivePlayer(QString player) { if (m_activePlayer == player) return; m_activePlayer = player; emit activePlayerChanged(); }
 
+    void cleanup();
+
 signals:
     void activePlayerChanged();
     void entered(int index);

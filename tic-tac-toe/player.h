@@ -16,6 +16,7 @@ signals:
 public slots:
     QString id() const { return "Man"; }
     void step();
+    void cancel();
 
     void receiveIndex(int index);
 
